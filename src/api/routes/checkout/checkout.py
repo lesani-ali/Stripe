@@ -2,7 +2,7 @@ import stripe
 from fastapi import APIRouter, HTTPException, Request, Response
 import time
 
-from ...config.config import CURRENCY, STRIPE_WEBHOOK_SECRET, FRONTEND_URL
+from ...config.config import CURRENCY, STRIPE_WEBHOOK_SECRET
 from .utils import money_split, transfer_to_connected
 from .schema import CreateCheckoutRequest, ReleasePayoutRequest
 
@@ -39,7 +39,8 @@ def create_setup_session(req: CreateCheckoutRequest):
         }
 
         session = stripe.checkout.Session.create(
-            mode="setup",  # ✅ collect & save card, no charge
+            mode="setup",
+            currency=CURRENCY  # ✅ collect & save card, no charge
             success_url=f"{FRONTEND_URL}/pay/success?session_id={{CHECKOUT_SESSION_ID}}",
             cancel_url=f"{FRONTEND_URL}/pay/cancel",
             metadata={"order_id": req.order_id},
